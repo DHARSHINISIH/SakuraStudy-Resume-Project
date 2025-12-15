@@ -2,7 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Lottie from "lottie-react";
 import japanAnimation from "./Japaneese (1).json";
-
+import sakuraLogo from "./assets/sakura-logo.jpg";
+import "./LoginPage.css";
 
 export default function LoginPage() {
   const [isLoginMode, setIsLoginMode] = useState(false);
@@ -39,146 +40,126 @@ export default function LoginPage() {
       const data = await response.json();
 
       if (response.ok) {
-        alert("✅ " + (data.message || "Success!"));
-
-        if (isLoginMode) {
-          const userLevel = data.language?.toLowerCase() || "languages";
-
-          switch (userLevel) {
-            case "beginner":
-              navigate("/beginner", { state: { username: data.username } });
-              break;
-            case "intermediate":
-              navigate("/intermediate", { state: { username: data.username } });
-              break;
-            case "advanced":
-              navigate("/advanced", { state: { username: data.username } });
-              break;
-            default:
-              navigate("/languages", { state: { username: data.username } });
-              break;
-          }
-        } else {
-          navigate("/languages", { state: { username } });
-        }
+        navigate("/languages", {
+          state: { username: data.username || username },
+        });
       } else {
-        alert("❌ " + (data.error || data.message || "Something went wrong"));
+        alert(data.message || "Something went wrong");
       }
     } catch (error) {
-      console.error("Error:", error);
-      alert("Server error, please try again later.");
+      alert("Server error");
     }
   };
 
   return (
-    <div className="flex h-screen items-center justify-center bg-gradient-to-br from-pink-200 to-pink-400">
+    <div className="login-page">
+      {/* LOGO */}
+      <div className="logo-container" onClick={() => navigate("/")}>
+        <img src={sakuraLogo} alt="Sakura Logo" className="sakura-logo" />
+        <span className="logo-text">Learn Japanese Effectively</span>
+      </div>
 
-      {/* MAIN WRAPPER (Animation + Form Centered) */}
-      <div className="flex w-[90%] max-w-5xl items-center justify-between">
-
-        {/* LEFT SIDE — Animation */}
-        <div className="w-1/2 flex justify-center items-center">
+      {/* WRAPPER */}
+      <div className="login-wrapper">
+        {/* ANIMATION */}
+        <div className="side-animation">
           <Lottie
             animationData={japanAnimation}
-            loop={true}
-            style={{
-              width: "360px",
-              height: "360px",
-            }}
+            loop
+            className="login-animation"
           />
         </div>
 
-        {/* RIGHT SIDE — Card */}
-        <div className="w-1/2 flex justify-center">
-          <div className="w-full max-w-md p-8 bg-white rounded-2xl shadow-2xl border border-pink-100">
+        {/* LOGIN CARD */}
+        <div className="login-card">
+          <h2 className="login-title">
+            🌸 {isLoginMode ? "Login" : "Create Sakura Account"}
+          </h2>
 
-            <h2 className="mb-6 text-center text-3xl font-bold text-pink-600">
-              🌸 {isLoginMode ? "Login" : "Create Sakura Account"} 🌸
-            </h2>
-            <p className="text-lg text-gray-600 mb-8">
-    Learn Japanese effectively — and beautifully 🌸
-  </p>
+          <p className="login-subtitle">
+            Learn Japanese effectively — and beautifully
+          </p>
 
-  {/* form continues */}
-  <form onSubmit={handleSubmit}></form>
-
-            <form onSubmit={handleSubmit}>
-
-              {!isLoginMode && (
-                <input
-                  type="text"
-                  placeholder="Enter Name"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  className="mb-4 w-full rounded-lg border p-3"
-                  required
-                />
-              )}
-
+          <form onSubmit={handleSubmit}>
+            {!isLoginMode && (
               <input
-                type="email"
-                placeholder="Enter Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="mb-4 w-full rounded-lg border p-3"
+                className="login-input"
+                type="text"
+                placeholder="Enter Name"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 required
               />
+            )}
 
+            <input
+              className="login-input"
+              type="email"
+              placeholder="Enter Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+
+            <input
+              className="login-input"
+              type="password"
+              placeholder="Enter Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+
+            {!isLoginMode && (
               <input
+                className="login-input"
                 type="password"
-                placeholder="Enter Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="mb-4 w-full rounded-lg border p-3"
+                placeholder="Confirm Password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
                 required
               />
+            )}
 
-              {!isLoginMode && (
-                <input
-                  type="password"
-                  placeholder="Confirm Password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="mb-4 w-full rounded-lg border p-3"
-                  required
-                />
-              )}
+            {/* REGISTER / LOGIN */}
+            <button className="login-button" type="submit">
+              {isLoginMode ? "Login" : "Register"}
+            </button>
 
-              <button
-                type="submit"
-                className="w-full rounded-lg bg-pink-500 py-3 text-white font-semibold hover:bg-pink-600 transition"
-              >
-                {isLoginMode ? "Login" : "Register"}
-              </button>
-            </form>
+            {/* GOOGLE BUTTON BELOW REGISTER */}
+            {!isLoginMode && (
+              <>
+                <div className="or-divider">OR</div>
 
-            <p className="mt-4 text-center text-sm text-gray-600">
-              {isLoginMode ? (
-                <>
-                  Don’t have an account?{" "}
-                  <span
-                    onClick={() => setIsLoginMode(false)}
-                    className="cursor-pointer text-pink-500 underline"
-                  >
-                    Register here
-                  </span>
-                </>
-              ) : (
-                <>
-                  Already have an account?{" "}
-                  <span
-                    onClick={() => setIsLoginMode(true)}
-                    className="cursor-pointer text-pink-500 underline"
-                  >
-                    Login here
-                  </span>
-                </>
-              )}
-            </p>
+                <button
+                  type="button"
+                  className="google-button"
+                  onClick={() => alert("Google Sign-In coming soon")}
+                >
+                  <img
+                    src="https://developers.google.com/identity/images/g-logo.png"
+                    alt="Google"
+                  />
+                  Continue with Google
+                </button>
+              </>
+            )}
+          </form>
 
-          </div>
+          <p className="switch-text">
+            {isLoginMode ? (
+              <>
+                Don’t have an account?{" "}
+                <span onClick={() => setIsLoginMode(false)}>Register</span>
+              </>
+            ) : (
+              <>
+                Already have an account?{" "}
+                <span onClick={() => setIsLoginMode(true)}>Login</span>
+              </>
+            )}
+          </p>
         </div>
-
       </div>
     </div>
   );
